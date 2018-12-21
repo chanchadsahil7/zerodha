@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- <link href="/static/css/style.css" rel="stylesheet"> -->
+  <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<style>
+table, td {
+border-bottom: 1px solid #ddd;
+  padding: 15px;
+  text-align: left;
+}
+table {
+  padding: auto 20% auto 20%;
+  width: 100%
+}
+/* tr:nth-child(even) {background-color: #f2f2f2;} */
+tr:hover {background-color: #f5f5f5;}
+input[type=text] {
+  padding: auto 20% auto 20%;
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(to bottom, #33ccff 0%, #ffcccc 100%);
+}
+</style>
+</head>
+<body>
+
+  <input id="searchKeyword" placeholder="Type SC_NAME HERE....." type="text" value="" name="keyword" onkeyup="get_searched_data()"/>
+
+<table id="myTable">
+  <thead>
+  <tr>
+    <td>SC_CODE</td>
+    <td>SC_NAME</td>
+    <td>OPEN</td>
+    <td>HIGH</td>
+    <td>LOW</td>
+    <td>CLOSE</td>
+  </tr>
+  <thead>
+</table>
+
+
+<!-- <button onclick="myCreateFunction()">Create row</button>
+<button onclick="myDeleteFunction()">Delete row</button> -->
+
+<script>
+
+function get_searched_data() {
+  $("#myTable tr").remove();
+  $.post("/get_searched_data", {"keyword": $("input[name='keyword']").val()})
+   .done(function(response) {
+    $("#the-string").show();
+    var table = document.getElementById("myTable");
+    var response = JSON.parse(response);
+    var row = table.insertRow(0);
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    var cell3 = row.insertCell(2);
+    var cell4 = row.insertCell(3);
+    var cell5 = row.insertCell(4);
+    var cell6 = row.insertCell(5);
+    cell1.innerHTML = "SC_CODE"
+    cell2.innerHTML = "SC_NAME"
+    cell3.innerHTML = "OPEN"
+    cell4.innerHTML = "HIGH"
+    cell5.innerHTML = "LOW"
+    cell6.innerHTML = "CLOSE"
+    for( i=1; i < response.length; i++) {
+      var row = table.insertRow(i);
+      var cell1 = row.insertCell(0);
+      var cell2 = row.insertCell(1);
+      var cell3 = row.insertCell(2);
+      var cell4 = row.insertCell(3);
+      var cell5 = row.insertCell(4);
+      var cell6 = row.insertCell(5);
+      cell1.innerHTML = response[i]['SC_CODE'];
+      cell2.innerHTML = response[i]['SC_NAME'];
+      cell3.innerHTML = response[i]['OPEN'];
+      cell4.innerHTML = response[i]['HIGH'];
+      cell5.innerHTML = response[i]['LOW'];
+      cell6.innerHTML = response[i]['CLOSE'];
+    }
+  });
+}
+
+function getData() {
+  $.get("/getTopTenRecordFromRedis")
+   .done(function(response) {
+    $("#the-string").show();
+    var table = document.getElementById("myTable");
+    // $("#myTable tr").remove();
+    var response = JSON.parse(response);
+    for( i=1; i < response.length; i++) {
+      var row = table.insertRow(i);
+      var cell1 = row.insertCell(0);
+      var cell2 = row.insertCell(1);
+      var cell3 = row.insertCell(2);
+      var cell4 = row.insertCell(3);
+      var cell5 = row.insertCell(4);
+      var cell6 = row.insertCell(5);
+      cell1.innerHTML = response[i]['SC_CODE'];
+      cell2.innerHTML = response[i]['SC_NAME'];
+      cell3.innerHTML = response[i]['OPEN'];
+      cell4.innerHTML = response[i]['HIGH'];
+      cell5.innerHTML = response[i]['LOW'];
+      cell6.innerHTML = response[i]['CLOSE'];
+    }
+  });
+}
+
+
+$(document).ready(function() {
+getData();
+});
+
+</script>

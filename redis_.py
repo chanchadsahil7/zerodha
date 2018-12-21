@@ -5,13 +5,10 @@ import ast
 REDIS_HOST = 'localhost'
 conn = redis.Redis(REDIS_HOST)
 
+# Method that stores the scrapped data from the BhavCopy to Redis Db
 def store_data(csv_file_path):
-    # Importing the training set
     dataset_train = pd.read_csv(csv_file_path)
     dataset_train = dataset_train[['SC_CODE', 'SC_NAME', 'OPEN', 'HIGH', 'LOW', 'CLOSE']]
-    # dataset_train.set_index('SC_NAME', inplace=True)
-    # dataset_train.head()
-
     pipe = conn.pipeline()
     for i in range(len(dataset_train)):
         # print(dataset_train.iloc[i][1], dataset_train.iloc[i].to_json())
@@ -19,17 +16,17 @@ def store_data(csv_file_path):
     pipe.execute()
     print('done')
 
-
+# Method to get top 10 record entries fromt he Redis Db
 def get_data():
     keys = conn.scan(cursor=0, count=11)
     lis = []
     for key in keys[1]:
         vals = conn.get(key)
         vals = vals.decode()
-        # print(type(ast.literal_eval(vals)))
         lis.append(ast.literal_eval(vals))
     return(lis)
 
+# Method to get the data related to searc keyword from the Redis Db
 def get_searched_data(keyword):
     if keyword == "":
         data = get_data()
@@ -41,6 +38,5 @@ def get_searched_data(keyword):
     for key in keys:
         vals = conn.get(key)
         vals = vals.decode()
-        # print(type(ast.literal_eval(vals)))
         lis.append(ast.literal_eval(vals))
     return(lis)

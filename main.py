@@ -16,6 +16,7 @@ class zerodha(object):
     def index(self):
         return open('main.html')
 
+    # API to scrap the latest BhavCopy from the web everyday
     @cherrypy.expose
     def getLatestBhavCopy(self):
         zipFileNameForCsv = 'EQ' + str(datetime.now().day - 1) + str(datetime.now().month) + str(datetime.now().year)[2:] + '.CSV'
@@ -28,20 +29,21 @@ class zerodha(object):
         redis_.store_data(zipFileNameForCsv)
         return("Done")
 
+    # API to get top ten record from Redis Db
     @cherrypy.expose
     def getTopTenRecordFromRedis(self):
         data = redis_.get_data()
-        # print(data)
         return (json.dumps(data))
 
+    # API to get the searched keyword stocks
     @cherrypy.expose
     def get_searched_data(self, keyword='*'):
         data = redis_.get_searched_data(keyword)
-        # print(data)
         return (json.dumps(data))
 
 
 if __name__ == '__main__':
+    # App configs
     conf = {
         '/': {
             'tools.sessions.on': True,
